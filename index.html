@@ -366,8 +366,8 @@ footer strong { color: var(--gray-700); }
 
   <div class="progress">
     <div class="progress-top">
-      <div class="progress-step">שלב <strong id="stepCurrent">1</strong> מתוך <strong id="stepTotal">4</strong></div>
-      <div class="progress-percent" id="progressPercent">25%</div>
+      <div class="progress-step">שלב <strong id="stepCurrent">1</strong> מתוך <strong id="stepTotal">5</strong></div>
+      <div class="progress-percent" id="progressPercent">20%</div>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
   </div>
@@ -654,9 +654,58 @@ footer strong { color: var(--gray-700); }
         </div>
       </div>
 
-      <!-- ============================ Step 4: סיכום ============================ -->
+      <!-- ============================ Step 4: נסח טאבו ============================ -->
       <div class="step" data-step="4">
-        <div class="step-num">שלב 04 · סקירה אחרונה</div>
+        <div class="step-num">שלב 04 · נסח טאבו (אופציונלי)</div>
+        <h2 class="step-title">פרטי נסח טאבו</h2>
+        <p class="step-desc">אם יש בידך נסח טאבו, ניתן למלא את הפרטים ולצרף את הקובץ. <strong>כל השלב הזה אינו חובה</strong> — ניתן לדלג ולהמשיך לסיכום.</p>
+
+        <div class="subsection">
+          <div class="subsection-title">פרטים מתוך הנסח</div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>תת חלקה</label>
+              <input type="text" name="C2_tat_helka">
+              <p class="hint">כפי שמופיע בנסח</p>
+            </div>
+            <div class="field">
+              <label>כתובת לפי הנסח</label>
+              <input type="text" name="deed_address">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>קומה לפי הנסח</label>
+              <input type="text" name="deed_floor">
+            </div>
+            <div class="field">
+              <label>מספר דירה לפי הנסח</label>
+              <input type="text" name="deed_apt_num">
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-title">צירוף נסח טאבו</div>
+
+          <div class="field">
+            <label>העלאת קובץ הנסח</label>
+            <label class="file-upload">
+              <input type="file" name="deed_file" accept=".pdf,.jpg,.jpeg,.png,image/*" onchange="onFileChange(this)">
+              <span class="file-upload-icon">📜</span>
+              <span class="file-upload-text">לחץ/י להעלאת נסח טאבו</span>
+              <span class="file-upload-hint">PDF, JPG, PNG · עד 10MB · אופציונלי</span>
+              <span class="file-name"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ Step 5: סיכום ============================ -->
+      <div class="step" data-step="5">
+        <div class="step-num">שלב 05 · סקירה אחרונה</div>
         <h2 class="step-title">סיכום ושליחה</h2>
         <p class="step-desc">סקור/י את הפרטים. ניתן לחזור לשלב קודם כדי לערוך.</p>
 
@@ -686,9 +735,9 @@ footer strong { color: var(--gray-700); }
 </div>
 
 <script>
-const totalSteps = 4;
+const totalSteps = 5;
 let currentStep = 1;
-const stepTitles = ["בעלים ונכס","משפחה ומגורים","מסמכים ובנק","סיכום"];
+const stepTitles = ["פרטי הדייר","פרטים נוספים","מסמכים ובנק","נסח טאבו","סיכום"];
 
 function buildStepper() {
   const el = document.getElementById('stepper');
@@ -790,6 +839,8 @@ const fieldLabels = {
   C38_gas: 'חשבון גז', C39_id_copy: 'צילום ת"ז',
   C40_bank_name: 'שם הבנק', C41_branch: 'סניף', C42_account: 'מספר חשבון',
   C43_bank_confirmation: 'אישור ניהול חשבון', C44_signed: 'אישור חתימה',
+  C2_tat_helka: 'תת חלקה (נסח)', deed_address: 'כתובת (נסח)',
+  deed_floor: 'קומה (נסח)', deed_apt_num: 'מספר דירה (נסח)', deed_file: 'נסח טאבו',
 };
 const sectionMap = {
   'זיהוי דייר ונכס': ['C7_first_name','C8_last_name','C11_mobile','C3_address','C4_entrance','C5_floor','C6_apt_num'],
@@ -799,6 +850,7 @@ const sectionMap = {
   'שוכרים': ['C21_status','C23_tenant_names','C24_tenant_phone','C25_eviction_notice','C29_rental_contract'],
   'מסמכים': ['C35_arnona','C36_water','C37_electricity','C38_gas','C39_id_copy'],
   'בנק': ['C40_bank_name','C41_branch','C42_account','C43_bank_confirmation','C44_signed'],
+  'נסח טאבו (אופציונלי)': ['C2_tat_helka','deed_address','deed_floor','deed_apt_num','deed_file'],
 };
 const statusMap = {'1':'גר בדירה','0':'מושכרת','2':'ריקה'};
 
