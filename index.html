@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>אביב אורבן · שאלון דייר — מעוז אביב</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #0a0a0a;
+  --gray-900: #1a1a1a;
+  --gray-700: #4a4a4a;
+  --gray-500: #8a8a8a;
+  --gray-300: #d4d4d4;
+  --gray-200: #e8e8e8;
+  --gray-100: #f4f4f4;
+  --gray-50: #fafafa;
+  --white: #ffffff;
+  --accent: #b89968;
+  --error: #c53030;
+  --success: #2f855a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+  font-family: "Heebo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--gray-50);
+  color: var(--black);
+  line-height: 1.55;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 18px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.topbar .logo { display: flex; align-items: center; gap: 14px; }
+.topbar .logo img { height: 28px; width: auto; }
+.topbar .tagline { color: var(--gray-700); font-size: 13px; font-weight: 500; letter-spacing: 0.02em; }
+.topbar .phone { color: var(--gray-700); font-size: 13px; font-weight: 500; }
+
+.hero {
+  background: var(--black);
+  color: var(--white);
+  padding: 56px 28px 80px;
+  text-align: center;
+  position: relative;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 80px;
+  background: linear-gradient(180deg, transparent 0%, var(--gray-50) 100%);
+  pointer-events: none;
+}
+.hero .label { font-size: 12px; letter-spacing: 0.25em; font-weight: 600; color: var(--accent); margin-bottom: 14px; text-transform: uppercase; }
+.hero h1 { font-size: 44px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 14px; line-height: 1.1; }
+.hero p { font-size: 16px; color: rgba(255,255,255,0.72); max-width: 520px; margin: 0 auto; font-weight: 300; }
+
+.container {
+  max-width: 760px;
+  margin: -40px auto 60px;
+  padding: 0 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.progress {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.progress-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+.progress-step { font-size: 13px; color: var(--gray-500); font-weight: 500; }
+.progress-step strong { color: var(--black); font-weight: 700; }
+.progress-percent { font-size: 13px; color: var(--gray-700); font-weight: 600; }
+.progress-bar { height: 4px; background: var(--gray-200); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--black); width: 0%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+.stepper {
+  display: flex;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+.stepper-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 0.2s;
+}
+.stepper-item.active { opacity: 1; }
+.stepper-item.done { opacity: 0.85; }
+.stepper-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 1.5px solid var(--gray-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-500);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.stepper-item.active .stepper-dot { background: var(--black); border-color: var(--black); color: var(--white); }
+.stepper-item.done .stepper-dot { background: var(--accent); border-color: var(--accent); color: var(--white); }
+.stepper-label { font-size: 13px; color: var(--gray-700); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stepper-item.active .stepper-label { color: var(--black); font-weight: 700; }
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+
+.step { display: none; padding: 36px 36px 28px; animation: fadeIn 0.35s ease-out; }
+.step.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-num { font-size: 11px; letter-spacing: 0.25em; color: var(--accent); font-weight: 700; margin-bottom: 8px; }
+.step-title { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; color: var(--black); }
+.step-desc { color: var(--gray-700); font-size: 15px; margin-bottom: 32px; font-weight: 300; line-height: 1.6; }
+
+.subsection {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--gray-200);
+}
+.subsection:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+.subsection-title {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  color: var(--gray-700);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.field { margin-bottom: 22px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+@media (max-width: 600px) {
+  .field-row, .field-row-3 { grid-template-columns: 1fr; }
+}
+
+label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--black); letter-spacing: 0.01em; }
+.required { color: var(--error); margin-right: 2px; }
+
+input[type="text"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"], textarea, select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--gray-300);
+  border-radius: 3px;
+  font-size: 15px;
+  font-family: inherit;
+  background: var(--white);
+  color: var(--black);
+  transition: all 0.15s;
+}
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--black); box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
+textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+.hint { font-size: 12px; color: var(--gray-500); margin-top: 6px; font-weight: 400; }
+
+.radio-group { display: flex; flex-direction: column; gap: 8px; }
+.radio-option {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px;
+  border: 1px solid var(--gray-300);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--white);
+  font-size: 14px;
+  font-weight: 500;
+}
+.radio-option:hover { border-color: var(--gray-500); background: var(--gray-50); }
+.radio-option input[type="radio"] { margin: 0; accent-color: var(--black); cursor: pointer; width: 16px; height: 16px; }
+.radio-option:has(input:checked) { background: var(--black); border-color: var(--black); color: var(--white); }
+.radio-option:has(input:checked) input[type="radio"] { accent-color: var(--white); }
+
+.conditional {
+  background: var(--gray-50);
+  border-right: 2px solid var(--accent);
+  padding: 18px 20px;
+  border-radius: 3px;
+  margin-top: 16px;
+  display: none;
+  animation: fadeIn 0.3s ease-out;
+}
+.conditional.show { display: block; }
+
+.file-upload {
+  display: block;
+  border: 1.5px dashed var(--gray-300);
+  border-radius: 3px;
+  padding: 22px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--white);
+  position: relative;
+}
+.file-upload:hover { border-color: var(--black); background: var(--gray-50); }
+.file-upload.has-file { border-color: var(--success); background: #f0fdf4; }
+.file-upload input { display: none; }
+.file-upload-icon { font-size: 22px; margin-bottom: 6px; display: block; }
+.file-upload-text { font-size: 13px; color: var(--black); font-weight: 600; }
+.file-upload-hint { font-size: 11px; color: var(--gray-500); margin-top: 3px; font-weight: 400; }
+.file-name { color: var(--success); font-size: 12px; margin-top: 8px; font-weight: 600; display: none; }
+.file-upload.has-file .file-name { display: block; }
+
+.nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 22px 36px;
+  background: var(--gray-50);
+  border-top: 1px solid var(--gray-200);
+}
+.btn {
+  padding: 12px 28px;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.01em;
+}
+.btn-primary { background: var(--black); color: var(--white); }
+.btn-primary:hover { background: var(--gray-900); transform: translateY(-1px); }
+.btn-secondary { background: var(--white); color: var(--black); border-color: var(--gray-300); }
+.btn-secondary:hover { border-color: var(--black); }
+.btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-secondary:disabled:hover { border-color: var(--gray-300); }
+
+.summary-section { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid var(--gray-200); }
+.summary-section:last-of-type { border-bottom: none; padding-bottom: 0; }
+.summary-title { font-size: 11px; letter-spacing: 0.2em; font-weight: 700; color: var(--gray-700); margin-bottom: 14px; text-transform: uppercase; }
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; font-size: 14px; }
+.summary-row { display: contents; }
+.summary-row dt { color: var(--gray-700); font-weight: 400; }
+.summary-row dd { color: var(--black); font-weight: 600; word-break: break-word; }
+
+footer { text-align: center; padding: 30px 20px; color: var(--gray-500); font-size: 12px; font-weight: 400; }
+footer strong { color: var(--gray-700); }
+
+@media (max-width: 720px) {
+  body { font-size: 15px; }
+  .topbar { padding: 14px 16px; gap: 10px; }
+  .topbar .logo img { height: 22px; }
+  .topbar .tagline { display: none; }
+  .topbar .phone { font-size: 12px; }
+
+  .hero { padding: 36px 18px 70px; }
+  .hero .label { font-size: 11px; letter-spacing: 0.2em; margin-bottom: 10px; }
+  .hero h1 { font-size: 28px; line-height: 1.15; }
+  .hero p { font-size: 14px; }
+
+  .container { margin: -32px auto 30px; padding: 0 12px; }
+
+  .progress { padding: 16px 18px; border-radius: 4px; }
+  .progress-step { font-size: 12px; }
+  .progress-percent { font-size: 12px; }
+
+  .stepper { padding: 12px 14px; gap: 4px; border-radius: 4px; }
+  .stepper-item { gap: 6px; }
+  .stepper-label { display: none; }
+  .stepper-dot { width: 28px; height: 28px; font-size: 12px; }
+
+  .card { border-radius: 4px; }
+  .step { padding: 24px 18px 20px; }
+  .step-num { font-size: 10px; letter-spacing: 0.18em; }
+  .step-title { font-size: 22px; margin-bottom: 6px; }
+  .step-desc { font-size: 14px; margin-bottom: 22px; }
+
+  .subsection { margin-top: 24px; padding-top: 20px; }
+  .subsection-title { font-size: 10px; letter-spacing: 0.16em; }
+
+  .field { margin-bottom: 18px; }
+  .field-row, .field-row-3 { grid-template-columns: 1fr; gap: 14px; }
+
+  label { font-size: 13px; }
+  input[type="text"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"], textarea, select {
+    font-size: 16px; /* iOS zoom prevention */
+    padding: 12px 13px;
+  }
+  textarea { min-height: 80px; }
+
+  .radio-option { padding: 12px 14px; font-size: 14px; }
+  .conditional { padding: 14px 14px; }
+
+  .file-upload { padding: 18px 14px; }
+  .file-upload-icon { font-size: 20px; }
+  .file-upload-text { font-size: 13px; }
+  .file-upload-hint { font-size: 11px; }
+
+  .nav { padding: 16px 18px; gap: 10px; }
+  .btn { padding: 11px 18px; font-size: 13px; flex: 1; justify-content: center; }
+  .btn-secondary { padding: 11px 14px; }
+
+  .summary-grid { grid-template-columns: 1fr; gap: 6px; }
+  .summary-row dt { color: var(--gray-500); font-size: 12px; margin-top: 6px; }
+  .summary-section { margin-bottom: 18px; padding-bottom: 18px; }
+
+  footer { padding: 22px 16px; font-size: 11px; }
+}
+
+@media (max-width: 380px) {
+  .hero h1 { font-size: 24px; }
+  .step-title { font-size: 20px; }
+  .stepper-dot { width: 26px; height: 26px; font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <img src="aviv-logo.png" alt="Aviv Urban">
+    <span class="tagline">יוזמים איכות</span>
+  </div>
+  <div class="phone">03-7533247</div>
+</div>
+
+<div class="hero">
+  <div class="label">פינוי בינוי · מעוז אביב</div>
+  <h1>שאלון פרטי דייר</h1>
+  <p>איסוף פרטים לקראת שלב הפינוי. ההתקדמות נשמרת אוטומטית — ניתן לחזור ולהמשיך בהמשך.</p>
+</div>
+
+<div class="container">
+
+  <div class="progress">
+    <div class="progress-top">
+      <div class="progress-step">שלב <strong id="stepCurrent">1</strong> מתוך <strong id="stepTotal">4</strong></div>
+      <div class="progress-percent" id="progressPercent">25%</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="stepper" id="stepper"></div>
+
+  <div class="card">
+    <form id="residentForm" onsubmit="handleSubmit(event)">
+
+      <!-- ============================ Step 1: פרטי הדייר ============================ -->
+      <div class="step active" data-step="1">
+        <div class="step-num">שלב 01 · פרטי הדייר</div>
+        <h2 class="step-title">פרטים אישיים והנכס</h2>
+        <p class="step-desc">בחלק הראשון אנא הזן/י את פרטיך ופרטי הדירה לזיהוי. בחלק השני — פרטים נוספים על הבעלים.</p>
+
+        <div class="subsection">
+          <div class="subsection-title">זיהוי דייר ונכס</div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>שם פרטי <span class="required">*</span></label>
+              <input type="text" name="C7_first_name" required>
+            </div>
+            <div class="field">
+              <label>שם משפחה <span class="required">*</span></label>
+              <input type="text" name="C8_last_name" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>טלפון נייד <span class="required">*</span></label>
+            <input type="tel" name="C11_mobile" placeholder="050-1234567" required>
+          </div>
+
+          <div class="field">
+            <label>כתובת הנכס <span class="required">*</span></label>
+            <input type="text" name="C3_address" placeholder="לדוגמא: מבצע קדש 32" required>
+          </div>
+
+          <div class="field-row-3">
+            <div class="field">
+              <label>כניסה</label>
+              <input type="text" name="C4_entrance">
+            </div>
+            <div class="field">
+              <label>קומה <span class="required">*</span></label>
+              <input type="text" name="C5_floor" placeholder="קרקע / 1 / 2..." required>
+            </div>
+            <div class="field">
+              <label>מספר דירה <span class="required">*</span></label>
+              <input type="text" name="C6_apt_num" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-title">פרטי בעלים</div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>תעודת זהות <span class="required">*</span></label>
+              <input type="text" name="C10_id" inputmode="numeric" pattern="[0-9]{5,9}" required>
+              <p class="hint">9 ספרות</p>
+            </div>
+            <div class="field">
+              <label>מייל</label>
+              <input type="email" name="C12_email" placeholder="name@example.com">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>כתובת מגורים עדכנית <span class="required">*</span></label>
+            <input type="text" name="C13_current_address" placeholder="היכן את/ה מתגורר/ת היום" required>
+            <p class="hint">אם אינך מתגורר/ת בדירה הנמצאת בפרויקט</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ Step 2: פרטים נוספים ============================ -->
+      <div class="step" data-step="2">
+        <div class="step-num">שלב 02 · פרטים נוספים</div>
+        <h2 class="step-title">איש קשר, קשיש ושוכרים</h2>
+        <p class="step-desc">חלקים אלה רלוונטיים רק אם תענה/תעני "כן" — מלא/י רק את מה שמתאים אליך.</p>
+
+        <div class="subsection">
+          <div class="subsection-title">איש קשר נוסף</div>
+
+          <div class="field">
+            <label>האם יש איש קשר נוסף? <span class="required">*</span></label>
+            <p class="hint" style="margin-top: -2px; margin-bottom: 8px;">לדוגמא: בן/בת, אפוטרופוס, נציג מטעמך</p>
+            <div class="radio-group">
+              <label class="radio-option"><input type="radio" name="has_contact" value="yes" onclick="toggleContact(true)" required> כן, יש איש קשר נוסף</label>
+              <label class="radio-option"><input type="radio" name="has_contact" value="no" onclick="toggleContact(false)"> לא, רק אני</label>
+            </div>
+          </div>
+
+          <div class="conditional" id="contact-fields">
+            <div class="field">
+              <label>שם איש הקשר <span class="required">*</span></label>
+              <input type="text" name="C15_contact_name" placeholder="שם מלא + תפקיד" data-cond-required>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>טלפון איש קשר <span class="required">*</span></label>
+                <input type="tel" name="C16_contact_phone" data-cond-required>
+              </div>
+              <div class="field">
+                <label>מייל איש קשר</label>
+                <input type="email" name="C17_contact_email">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-title">דייר קשיש</div>
+
+          <div class="field">
+            <label>האם הבעלים מוגדר כדייר קשיש? <span class="required">*</span></label>
+            <div class="radio-group">
+              <label class="radio-option"><input type="radio" name="C18_senior" value="כן" onclick="toggleSenior(true)" required> כן</label>
+              <label class="radio-option"><input type="radio" name="C18_senior" value="לא" onclick="toggleSenior(false)"> לא</label>
+              <label class="radio-option"><input type="radio" name="C18_senior" value="לא יודע" onclick="toggleSenior(false)"> לא יודע</label>
+            </div>
+            <p class="hint">סטטוס דייר קשיש מקנה זכויות מיוחדות בתהליך</p>
+          </div>
+
+          <div class="conditional" id="senior-fields">
+            <div class="field">
+              <label>גיל / תאריך לידה <span class="required">*</span></label>
+              <input type="text" name="C20_age" placeholder="גיל או תאריך לידה (DD/MM/YYYY)" data-cond-required>
+            </div>
+            <div class="field">
+              <label>פירוט נוסף</label>
+              <textarea name="C19_senior_details" placeholder="האם הוא מתגורר בדירה? פרטים נוספים"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-title">פרטי שוכרים</div>
+
+          <div class="field">
+            <label>מי גר בדירה כיום? <span class="required">*</span></label>
+            <div class="radio-group">
+              <label class="radio-option"><input type="radio" name="C21_status" value="1" onclick="toggleRental(false)" required> אני גר/ה בדירה</label>
+              <label class="radio-option"><input type="radio" name="C21_status" value="0" onclick="toggleRental(true)"> הדירה מושכרת לאחרים</label>
+              <label class="radio-option"><input type="radio" name="C21_status" value="2" onclick="toggleRental(false)"> הדירה ריקה</label>
+            </div>
+          </div>
+
+          <div class="conditional" id="rental-fields">
+            <div class="field-row">
+              <div class="field">
+                <label>שמות השוכרים <span class="required">*</span></label>
+                <input type="text" name="C23_tenant_names" data-cond-required>
+              </div>
+              <div class="field">
+                <label>טלפון שוכרים / מתווך <span class="required">*</span></label>
+                <input type="tel" name="C24_tenant_phone" data-cond-required>
+              </div>
+            </div>
+            <div class="field">
+              <label>האם בחוזה כתובה הודעת פינוי 3 חודשים מראש? <span class="required">*</span></label>
+              <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="C25_eviction_notice" value="כן" data-cond-required> כן</label>
+                <label class="radio-option"><input type="radio" name="C25_eviction_notice" value="לא" data-cond-required> לא</label>
+                <label class="radio-option"><input type="radio" name="C25_eviction_notice" value="לא יודע" data-cond-required> לא יודע</label>
+              </div>
+              <p class="hint">אם אין סעיף כזה — חשוב שנדע כדי לטפל בזה במיידי</p>
+            </div>
+            <div class="field">
+              <label>חוזה שכירות מעודכן <span class="required">*</span></label>
+              <label class="file-upload">
+                <input type="file" name="C29_rental_contract" accept=".pdf,.jpg,.jpeg,.png,image/*" onchange="onFileChange(this)" data-cond-required>
+                <span class="file-upload-icon">📄</span>
+                <span class="file-upload-text">העלאת חוזה</span>
+                <span class="file-upload-hint">PDF, JPG, PNG · עד 10MB</span>
+                <span class="file-name"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ Step 3: מסמכים ובנק ============================ -->
+      <div class="step" data-step="3">
+        <div class="step-num">שלב 03 · מסמכים ובנק</div>
+        <h2 class="step-title">מסמכים ופרטי בנק</h2>
+        <p class="step-desc">העלאת חשבונות, צילום ת"ז, ופרטי חשבון בנק להעברות.</p>
+
+        <div class="subsection">
+          <div class="subsection-title">צילומי חשבונות ומסמכים</div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>חשבון ארנונה</label>
+              <label class="file-upload">
+                <input type="file" name="C35_arnona" accept=".pdf,.jpg,.jpeg,.png,image/*" onchange="onFileChange(this)">
+                <span class="file-upload-icon">🏛️</span>
+                <span class="file-upload-text">חשבון ארנונה</span>
+                <span class="file-name"></span>
+              </label>
+            </div>
+            <div class="field">
+              <label>חשבון מים</label>
+              <label class="file-upload">
+                <input type="file" name="C36_water" accept=".pdf,.jpg,.jpeg,.png,image/*" onchange="onFileChange(this)">
+                <span class="file-upload-icon">💧</span>
+                <span class="file-upload-text">חשבון מים</span>
+                <span class="file-name"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>חשבון חשמל</label>
+              <label class="file-upload">
+                <input type="file" name="C37_electricity" accept=".pdf,.jpg,.jpeg,.png,image/*" onchange="onFileChange(this)">
+                <span class="file-upload-icon">⚡</span>
+                <span class="file-upload-text">חשבון חשמל</span>
+                <span class="file-name"></span>
+              </label>
+            </div>
+            <div class="field">
+              <label>חשבון גז</label>
+              <label class="file-upload">
+                <input type="file" name="C38_gas" accept=".pdf,.jpg,.jpeg,.png,image/*" onchange="onFileChange(this)">
+                <span class="file-upload-icon">🔥</span>
+                <span class="file-upload-text">חשבון גז</span>
+                <span class="file-name"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>צילום תעודת זהות (כולל ספח) <span class="required">*</span></label>
+            <label class="file-upload">
+              <input type="file" name="C39_id_copy" accept=".pdf,.jpg,.jpeg,.png,image/*" onchange="onFileChange(this)" required>
+              <span class="file-upload-icon">🪪</span>
+              <span class="file-upload-text">העלאת צילום ת"ז</span>
+              <span class="file-upload-hint">חובה — כולל ספח</span>
+              <span class="file-name"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-title">פרטי חשבון בנק</div>
+
+          <div class="field-row-3">
+            <div class="field">
+              <label>שם הבנק <span class="required">*</span></label>
+              <input type="text" name="C40_bank_name" required>
+            </div>
+            <div class="field">
+              <label>סניף <span class="required">*</span></label>
+              <input type="text" name="C41_branch" required>
+            </div>
+            <div class="field">
+              <label>מספר חשבון <span class="required">*</span></label>
+              <input type="text" name="C42_account" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>אישור ניהול חשבון <span class="required">*</span></label>
+            <label class="file-upload">
+              <input type="file" name="C43_bank_confirmation" accept=".pdf,.jpg,.jpeg,.png,image/*" onchange="onFileChange(this)" required>
+              <span class="file-upload-icon">🏦</span>
+              <span class="file-upload-text">העלאת אישור ניהול חשבון</span>
+              <span class="file-upload-hint">ניתן לקבל מהבנק או מהאפליקציה</span>
+              <span class="file-name"></span>
+            </label>
+          </div>
+
+          <div class="field">
+            <label>אישור חתימה <span class="required">*</span></label>
+            <div class="radio-group">
+              <label class="radio-option"><input type="radio" name="C44_signed" value="כן" required> אני מאשר/ת שהפרטים נכונים ושאני בעל החשבון</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ Step 4: סיכום ============================ -->
+      <div class="step" data-step="4">
+        <div class="step-num">שלב 04 · סקירה אחרונה</div>
+        <h2 class="step-title">סיכום ושליחה</h2>
+        <p class="step-desc">סקור/י את הפרטים. ניתן לחזור לשלב קודם כדי לערוך.</p>
+
+        <div id="summary"></div>
+
+        <div class="field" style="margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--gray-200);">
+          <label>אישור סופי <span class="required">*</span></label>
+          <div class="radio-group">
+            <label class="radio-option"><input type="radio" name="final_confirm" value="כן" required> אני מאשר/ת שכל הפרטים שמילאתי נכונים, ומסכים/ה לעיבוד הנתונים לצורך תהליך הפינוי</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="nav">
+        <button type="button" class="btn btn-secondary" id="btnBack" onclick="goBack()" disabled>← חזרה</button>
+        <button type="button" class="btn btn-primary" id="btnNext" onclick="goNext()">המשך →</button>
+        <button type="submit" class="btn btn-primary" id="btnSubmit" style="display:none;">שליחת השאלון ✓</button>
+      </div>
+    </form>
+  </div>
+
+  <footer>
+    <strong>אביב אורבן</strong> · יוזמים איכות · פרויקט מעוז אביב<br>
+    <small>טופס דמו · עוד לא מחובר ל-Google Sheets</small>
+  </footer>
+</div>
+
+<script>
+const totalSteps = 4;
+let currentStep = 1;
+const stepTitles = ["בעלים ונכס","משפחה ומגורים","מסמכים ובנק","סיכום"];
+
+function buildStepper() {
+  const el = document.getElementById('stepper');
+  el.innerHTML = stepTitles.map((t, i) => `
+    <div class="stepper-item ${i+1 === currentStep ? 'active' : ''}" data-step="${i+1}" onclick="goTo(${i+1})">
+      <div class="stepper-dot">${i+1}</div>
+      <div class="stepper-label">${t}</div>
+    </div>
+  `).join('');
+}
+buildStepper();
+
+function updateUI() {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+
+  document.getElementById('stepCurrent').textContent = currentStep;
+  document.getElementById('stepTotal').textContent = totalSteps;
+  const pct = Math.round((currentStep / totalSteps) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPercent').textContent = pct + '%';
+
+  document.querySelectorAll('.stepper-item').forEach(item => {
+    const s = parseInt(item.dataset.step);
+    item.classList.remove('active', 'done');
+    if (s === currentStep) item.classList.add('active');
+    else if (s < currentStep) item.classList.add('done');
+  });
+
+  document.getElementById('btnBack').disabled = currentStep === 1;
+  document.getElementById('btnNext').style.display = currentStep === totalSteps ? 'none' : '';
+  document.getElementById('btnSubmit').style.display = currentStep === totalSteps ? '' : 'none';
+
+  if (currentStep === totalSteps) renderSummary();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateStep(step) {
+  const stepEl = document.querySelector(`.step[data-step="${step}"]`);
+  const required = stepEl.querySelectorAll('[required], [data-cond-required]');
+  const seenRadios = new Set();
+  for (const f of required) {
+    const inHidden = f.closest('.conditional:not(.show)');
+    if (inHidden) continue;
+    if (f.type === 'radio') {
+      if (seenRadios.has(f.name)) continue;
+      seenRadios.add(f.name);
+      const checked = stepEl.querySelector(`input[name="${f.name}"]:checked`);
+      if (!checked) {
+        const labelEl = f.closest('.field')?.querySelector('label');
+        alert('יש למלא: ' + (labelEl?.textContent.replace('*','').trim() || f.name));
+        return false;
+      }
+    } else if (!f.value || (f.type === 'file' && f.files.length === 0)) {
+      const labelEl = f.closest('.field')?.querySelector('label');
+      alert('יש למלא: ' + (labelEl?.textContent.replace('*','').trim() || f.name));
+      f.focus();
+      return false;
+    }
+  }
+  return true;
+}
+
+function goNext() {
+  if (!validateStep(currentStep)) return;
+  if (currentStep < totalSteps) { currentStep++; updateUI(); saveDraft(); }
+}
+function goBack() { if (currentStep > 1) { currentStep--; updateUI(); } }
+function goTo(step) {
+  if (step <= currentStep || step === currentStep + 1) { currentStep = step; updateUI(); }
+}
+
+function toggleContact(show) { document.getElementById('contact-fields').classList.toggle('show', show); }
+function toggleSenior(show) { document.getElementById('senior-fields').classList.toggle('show', show); }
+function toggleRental(show) { document.getElementById('rental-fields').classList.toggle('show', show); }
+
+function onFileChange(input) {
+  const wrapper = input.closest('.file-upload');
+  const fnEl = wrapper.querySelector('.file-name');
+  if (input.files.length > 0) {
+    wrapper.classList.add('has-file');
+    fnEl.textContent = '✓ ' + input.files[0].name;
+  } else {
+    wrapper.classList.remove('has-file');
+    fnEl.textContent = '';
+  }
+}
+
+const fieldLabels = {
+  C7_first_name: 'שם פרטי', C8_last_name: 'שם משפחה',
+  C11_mobile: 'נייד', C3_address: 'כתובת הנכס', C4_entrance: 'כניסה',
+  C5_floor: 'קומה', C6_apt_num: 'מספר דירה',
+  C10_id: 'תעודת זהות', C12_email: 'מייל', C13_current_address: 'כתובת מגורים עדכנית',
+  C15_contact_name: 'שם איש קשר', C16_contact_phone: 'טלפון איש קשר', C17_contact_email: 'מייל איש קשר',
+  C18_senior: 'דייר קשיש', C20_age: 'גיל / תאריך לידה', C19_senior_details: 'פירוט קשיש',
+  C21_status: 'מצב הדירה', C23_tenant_names: 'שמות שוכרים', C24_tenant_phone: 'טלפון שוכרים',
+  C25_eviction_notice: 'הודעת פינוי 3 חודשים', C29_rental_contract: 'חוזה שכירות',
+  C35_arnona: 'חשבון ארנונה', C36_water: 'חשבון מים', C37_electricity: 'חשבון חשמל',
+  C38_gas: 'חשבון גז', C39_id_copy: 'צילום ת"ז',
+  C40_bank_name: 'שם הבנק', C41_branch: 'סניף', C42_account: 'מספר חשבון',
+  C43_bank_confirmation: 'אישור ניהול חשבון', C44_signed: 'אישור חתימה',
+};
+const sectionMap = {
+  'זיהוי דייר ונכס': ['C7_first_name','C8_last_name','C11_mobile','C3_address','C4_entrance','C5_floor','C6_apt_num'],
+  'פרטי בעלים': ['C10_id','C12_email','C13_current_address'],
+  'איש קשר נוסף': ['C15_contact_name','C16_contact_phone','C17_contact_email'],
+  'דייר קשיש': ['C18_senior','C20_age','C19_senior_details'],
+  'שוכרים': ['C21_status','C23_tenant_names','C24_tenant_phone','C25_eviction_notice','C29_rental_contract'],
+  'מסמכים': ['C35_arnona','C36_water','C37_electricity','C38_gas','C39_id_copy'],
+  'בנק': ['C40_bank_name','C41_branch','C42_account','C43_bank_confirmation','C44_signed'],
+};
+const statusMap = {'1':'גר בדירה','0':'מושכרת','2':'ריקה'};
+
+function renderSummary() {
+  const form = document.getElementById('residentForm');
+  const fd = new FormData(form);
+  const data = {};
+  for (const [k,v] of fd.entries()) {
+    if (v instanceof File) data[k] = v.name ? '✓ ' + v.name : '—';
+    else data[k] = v || '—';
+  }
+  if (data.C21_status) data.C21_status = statusMap[data.C21_status] || data.C21_status;
+
+  const html = Object.entries(sectionMap).map(([section, fields]) => {
+    const rows = fields.filter(f => fieldLabels[f]).map(f => `
+      <div class="summary-row">
+        <dt>${fieldLabels[f]}</dt>
+        <dd>${data[f] || '—'}</dd>
+      </div>`).join('');
+    return `
+      <div class="summary-section">
+        <div class="summary-title">${section}</div>
+        <dl class="summary-grid">${rows}</dl>
+      </div>`;
+  }).join('');
+  document.getElementById('summary').innerHTML = html;
+}
+
+function saveDraft() {
+  const form = document.getElementById('residentForm');
+  const fd = new FormData(form);
+  const data = {};
+  for (const [k,v] of fd.entries()) { if (!(v instanceof File)) data[k] = v; }
+  try { localStorage.setItem('maoz_aviv_draft', JSON.stringify({step: currentStep, data})); } catch(e){}
+}
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem('maoz_aviv_draft');
+    if (!raw) return;
+    const {data} = JSON.parse(raw);
+    Object.entries(data || {}).forEach(([k,v]) => {
+      const el = document.querySelector(`[name="${k}"]`);
+      if (!el) return;
+      if (el.type === 'radio') {
+        const r = document.querySelector(`[name="${k}"][value="${v}"]`);
+        if (r) { r.checked = true; r.dispatchEvent(new Event('click')); }
+      } else el.value = v;
+    });
+  } catch(e){}
+}
+loadDraft();
+document.getElementById('residentForm').addEventListener('input', saveDraft);
+
+function handleSubmit(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const data = {};
+  for (const [k,v] of fd.entries()) {
+    if (v instanceof File) data[k] = v.name ? `[קובץ: ${v.name}]` : '[ללא קובץ]';
+    else data[k] = v;
+  }
+  alert('זוהי תצוגה מקדימה בלבד.\n\nנשלחו ' + Object.keys(data).length + ' שדות.\nראה Console לפירוט.');
+  console.log('Form submission:', data);
+  try { localStorage.removeItem('maoz_aviv_draft'); } catch(e){}
+}
+
+updateUI();
+</script>
+</body>
+</html>
