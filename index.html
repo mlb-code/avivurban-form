@@ -387,11 +387,29 @@ footer strong { color: var(--gray-700); }
   80%, 100% { content: '...'; }
 }
 
+/* Submitted state — hide everything except topbar + thank-you + footer */
+body.submitted .hero,
+body.submitted .progress,
+body.submitted .stepper,
+body.submitted #residentForm { display: none !important; }
+body.submitted .container { padding-top: 40px; }
+body.submitted .card {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
 /* Success screen */
 .success-wrap {
   text-align: center;
   padding: 80px 24px 60px;
   animation: fadeUp 0.6s ease-out;
+  background: var(--white);
+  border-radius: 18px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+  max-width: 640px;
+  margin: 0 auto;
 }
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
@@ -852,13 +870,15 @@ footer strong { color: var(--gray-700); }
       <div class="success-check">
         <svg viewBox="0 0 52 52"><path d="M14 27 L23 36 L40 17"/></svg>
       </div>
-      <h2 class="success-title">תודה!</h2>
+      <h2 class="success-title">תודה רבה!</h2>
       <p class="success-message">
-        פרטיך התקבלו בהצלחה.<br>
-        נציג מטעם <strong>אביב אורבן</strong> יחזור אליך בהקדם.
+        פרטיך נשמרו בהצלחה במערכת.<br>
+        נציג מטעם <strong>אביב אורבן</strong> יצור איתך קשר בקרוב<br>
+        לתיאום ההמשך בתהליך הפינוי-בינוי.
       </p>
       <div class="success-brand">
-        <strong>אביב אורבן</strong> · יוזמים איכות · פרויקט מעוז אביב
+        <strong>אביב אורבן</strong> · יוזמים איכות<br>
+        פרויקט מעוז אביב, תל אביב
       </div>
     </div>
   </div>
@@ -1078,8 +1098,7 @@ async function handleSubmit(e) {
 
     try { localStorage.removeItem('maoz_aviv_draft'); } catch (_) {}
     overlay.classList.remove('show');
-    document.getElementById('residentForm').style.display = 'none';
-    document.querySelector('.progress-track').style.display = 'none';
+    document.body.classList.add('submitted');
     document.getElementById('thankYou').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (err) {
