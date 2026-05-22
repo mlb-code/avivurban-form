@@ -404,7 +404,14 @@ footer strong { color: var(--gray-700); }
 
           <div class="field">
             <label>כתובת הנכס <span class="required">*</span></label>
-            <input type="text" name="C3_address" placeholder="לדוגמא: מבצע קדש 32" required>
+            <select name="C3_address" required>
+              <option value="" disabled selected>בחר/י כתובת...</option>
+              <option value="בני אפרים 219">בני אפרים 219</option>
+              <option value="מבצע קדש 26">מבצע קדש 26</option>
+              <option value="מבצע קדש 28">מבצע קדש 28</option>
+              <option value="מבצע קדש 30">מבצע קדש 30</option>
+              <option value="מבצע קדש 32">מבצע קדש 32</option>
+            </select>
           </div>
 
           <div class="field-row-3">
@@ -725,12 +732,20 @@ footer strong { color: var(--gray-700); }
         <button type="button" class="btn btn-primary" id="btnNext" onclick="goNext()">המשך →</button>
         <button type="submit" class="btn btn-primary" id="btnSubmit" style="display:none;">שליחת השאלון ✓</button>
       </div>
+
+      <div id="submitError" style="display:none; margin-top:18px; padding:14px 16px; background:#fff1f1; border:1px solid #f3c1c1; border-radius:10px; color:#8a1a1a; font-weight:600;"></div>
     </form>
+
+    <div id="thankYou" style="display:none; text-align:center; padding:60px 24px;">
+      <div style="font-size:64px; line-height:1; margin-bottom:18px;">✓</div>
+      <h2 style="font-size:32px; font-weight:700; letter-spacing:-0.02em; margin-bottom:14px;">תודה!</h2>
+      <p style="font-size:18px; color:var(--gray-700); max-width:480px; margin:0 auto;">פרטיך התקבלו בהצלחה.<br>נחזור אליך בהקדם.</p>
+      <p style="margin-top:32px;"><strong>אביב אורבן</strong> · יוזמים איכות</p>
+    </div>
   </div>
 
   <footer>
-    <strong>אביב אורבן</strong> · יוזמים איכות · פרויקט מעוז אביב<br>
-    <small>טופס דמו · עוד לא מחובר ל-Google Sheets</small>
+    <strong>אביב אורבן</strong> · יוזמים איכות · פרויקט מעוז אביב
   </footer>
 </div>
 
@@ -904,17 +919,67 @@ function loadDraft() {
 loadDraft();
 document.getElementById('residentForm').addEventListener('input', saveDraft);
 
-function handleSubmit(e) {
+// כתובת ה-Web App של Apps Script — מתעדכנת אחרי deploy
+const APPS_SCRIPT_URL = '__APPS_SCRIPT_URL__';
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      const base64 = result.split(',')[1] || '';
+      resolve({ name: file.name, mimeType: file.type, base64 });
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleSubmit(e) {
   e.preventDefault();
-  const fd = new FormData(e.target);
-  const data = {};
-  for (const [k,v] of fd.entries()) {
-    if (v instanceof File) data[k] = v.name ? `[קובץ: ${v.name}]` : '[ללא קובץ]';
-    else data[k] = v;
+  const btn = document.getElementById('btnSubmit');
+  const errorBox = document.getElementById('submitError');
+  errorBox.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'שולח...';
+
+  try {
+    const form = e.target;
+    const fd = new FormData(form);
+    const payload = {};
+
+    for (const [k, v] of fd.entries()) {
+      if (v instanceof File) {
+        if (v.size > 0) payload[k] = await fileToBase64(v);
+      } else {
+        payload[k] = v;
+      }
+    }
+
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('__APPS_SCRIPT_URL__') === 0) {
+      throw new Error('הטופס עוד לא חובר לשרת. אנא פנה למנהל.');
+    }
+
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+    });
+
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'שגיאה לא ידועה');
+
+    try { localStorage.removeItem('maoz_aviv_draft'); } catch (_) {}
+    document.getElementById('residentForm').style.display = 'none';
+    document.querySelector('.progress-track').style.display = 'none';
+    document.getElementById('thankYou').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (err) {
+    errorBox.textContent = 'שגיאה: ' + (err.message || err);
+    errorBox.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'שליחת השאלון ✓';
   }
-  alert('זוהי תצוגה מקדימה בלבד.\n\nנשלחו ' + Object.keys(data).length + ' שדות.\nראה Console לפירוט.');
-  console.log('Form submission:', data);
-  try { localStorage.removeItem('maoz_aviv_draft'); } catch(e){}
 }
 
 updateUI();
