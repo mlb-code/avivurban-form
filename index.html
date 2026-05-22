@@ -323,14 +323,57 @@ footer strong { color: var(--gray-700); }
   .radio-option { padding: 12px 14px; font-size: 14px; }
   .conditional { padding: 14px 14px; }
 
-  .file-upload { padding: 18px 14px; }
-  .file-upload-icon { font-size: 20px; }
-  .file-upload-text { font-size: 13px; }
-  .file-upload-hint { font-size: 11px; }
+  .file-upload {
+    padding: 22px 14px;
+    border-width: 2px;
+  }
+  .file-upload-icon { font-size: 28px; margin-bottom: 4px; }
+  .file-upload-text { font-size: 15px; }
+  .file-upload-hint { font-size: 12px; }
+  /* רמז למובייל: אפשר גם לצלם */
+  .file-upload:not(.has-file)::after {
+    content: '📷 ניתן לצלם או לבחור מהגלריה';
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--gray-500);
+    font-weight: 500;
+  }
 
-  .nav { padding: 16px 18px; gap: 10px; }
-  .btn { padding: 11px 18px; font-size: 13px; flex: 1; justify-content: center; }
-  .btn-secondary { padding: 11px 14px; }
+  /* Sticky nav at bottom of viewport for mobile — always thumb-reachable */
+  .nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--white);
+    border-top: 1px solid var(--gray-200);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom)) 14px;
+    gap: 10px;
+    z-index: 100;
+    margin: 0;
+  }
+  .btn {
+    padding: 16px 14px;
+    font-size: 16px;
+    flex: 1;
+    justify-content: center;
+    border-radius: 12px;
+    min-height: 56px;
+    font-weight: 700;
+  }
+  .btn-secondary { padding: 16px 14px; max-width: 130px; }
+  /* Reserve space at bottom of card so sticky nav doesn't cover content */
+  .card { padding-bottom: 90px; }
+  body.submitted .card { padding-bottom: 0; }
+  body.submitted .nav { display: none; }
+  /* Larger touch targets for radios & checkboxes */
+  .radio-option {
+    min-height: 52px;
+    padding: 14px 14px;
+    font-size: 15px;
+  }
+  .terms-checkbox { font-size: 15px; }
+  .terms-checkbox input[type="checkbox"] { width: 24px; height: 24px; }
 
   .summary-grid { grid-template-columns: 1fr; gap: 6px; }
   .summary-row dt { color: var(--gray-500); font-size: 12px; margin-top: 6px; }
@@ -386,6 +429,21 @@ footer strong { color: var(--gray-700); }
   60% { content: '..'; }
   80%, 100% { content: '...'; }
 }
+
+/* Auto-save indicator */
+.save-badge {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 11px;
+  color: var(--success);
+  font-weight: 600;
+  background: rgba(47, 133, 90, 0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.save-badge.show { opacity: 1; }
 
 /* Terms of use box */
 .terms-box {
@@ -557,7 +615,7 @@ body.submitted .card {
 
   <div class="progress">
     <div class="progress-top">
-      <div class="progress-step">שלב <strong id="stepCurrent">1</strong> מתוך <strong id="stepTotal">5</strong></div>
+      <div class="progress-step">שלב <strong id="stepCurrent">1</strong> מתוך <strong id="stepTotal">5</strong> <span id="saveBadge" class="save-badge">נשמר ✓</span></div>
       <div class="progress-percent" id="progressPercent">20%</div>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
@@ -580,17 +638,17 @@ body.submitted .card {
           <div class="field-row">
             <div class="field">
               <label>שם פרטי</label>
-              <input type="text" name="C7_first_name">
+              <input type="text" name="C7_first_name" autocomplete="given-name">
             </div>
             <div class="field">
               <label>שם משפחה</label>
-              <input type="text" name="C8_last_name">
+              <input type="text" name="C8_last_name" autocomplete="family-name">
             </div>
           </div>
 
           <div class="field">
             <label>טלפון נייד</label>
-            <input type="tel" name="C11_mobile" placeholder="050-1234567">
+            <input type="tel" name="C11_mobile" placeholder="050-1234567" autocomplete="tel" inputmode="tel">
           </div>
 
           <div class="field">
@@ -612,11 +670,11 @@ body.submitted .card {
             </div>
             <div class="field">
               <label>קומה</label>
-              <input type="text" name="C5_floor" placeholder="קרקע / 1 / 2...">
+              <input type="text" name="C5_floor" placeholder="קרקע / 1 / 2..." inputmode="numeric">
             </div>
             <div class="field">
               <label>מספר דירה</label>
-              <input type="text" name="C6_apt_num">
+              <input type="text" name="C6_apt_num" inputmode="numeric">
             </div>
           </div>
         </div>
@@ -627,12 +685,12 @@ body.submitted .card {
           <div class="field-row">
             <div class="field">
               <label>תעודת זהות</label>
-              <input type="text" name="C10_id" inputmode="numeric">
+              <input type="text" name="C10_id" inputmode="numeric" autocomplete="off">
               <p class="hint">9 ספרות</p>
             </div>
             <div class="field">
               <label>מייל</label>
-              <input type="email" name="C12_email" placeholder="name@example.com">
+              <input type="email" name="C12_email" placeholder="name@example.com" autocomplete="email" inputmode="email">
             </div>
           </div>
 
@@ -670,11 +728,11 @@ body.submitted .card {
             <div class="field-row">
               <div class="field">
                 <label>טלפון איש קשר</label>
-                <input type="tel" name="C16_contact_phone">
+                <input type="tel" name="C16_contact_phone" autocomplete="tel" inputmode="tel">
               </div>
               <div class="field">
                 <label>מייל איש קשר</label>
-                <input type="email" name="C17_contact_email">
+                <input type="email" name="C17_contact_email" autocomplete="email" inputmode="email">
               </div>
             </div>
           </div>
@@ -695,8 +753,8 @@ body.submitted .card {
 
           <div class="conditional" id="senior-fields">
             <div class="field">
-              <label>גיל / תאריך לידה</label>
-              <input type="text" name="C20_age" placeholder="גיל או תאריך לידה (DD/MM/YYYY)">
+              <label>תאריך לידה</label>
+              <input type="date" name="C20_age" max="2026-05-22" min="1900-01-01">
             </div>
             <div class="field">
               <label>פירוט נוסף</label>
@@ -725,7 +783,7 @@ body.submitted .card {
               </div>
               <div class="field">
                 <label>טלפון שוכרים / מתווך</label>
-                <input type="tel" name="C24_tenant_phone">
+                <input type="tel" name="C24_tenant_phone" autocomplete="tel" inputmode="tel">
               </div>
             </div>
             <div class="field">
@@ -824,11 +882,11 @@ body.submitted .card {
             </div>
             <div class="field">
               <label>סניף</label>
-              <input type="text" name="C41_branch">
+              <input type="text" name="C41_branch" inputmode="numeric">
             </div>
             <div class="field">
               <label>מספר חשבון</label>
-              <input type="text" name="C42_account">
+              <input type="text" name="C42_account" inputmode="numeric">
             </div>
           </div>
 
@@ -864,7 +922,7 @@ body.submitted .card {
           <div class="field-row">
             <div class="field">
               <label>תת חלקה</label>
-              <input type="text" name="C2_tat_helka">
+              <input type="text" name="C2_tat_helka" inputmode="numeric">
               <p class="hint">כפי שמופיע בנסח</p>
             </div>
             <div class="field">
@@ -876,11 +934,11 @@ body.submitted .card {
           <div class="field-row">
             <div class="field">
               <label>קומה לפי הנסח</label>
-              <input type="text" name="deed_floor">
+              <input type="text" name="deed_floor" inputmode="numeric">
             </div>
             <div class="field">
               <label>מספר דירה לפי הנסח</label>
-              <input type="text" name="deed_apt_num">
+              <input type="text" name="deed_apt_num" inputmode="numeric">
             </div>
           </div>
         </div>
@@ -1023,7 +1081,10 @@ function updateUI() {
   document.getElementById('btnSubmit').style.display = currentStep === totalSteps ? '' : 'none';
 
   if (currentStep === totalSteps) renderSummary();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // גלילה לראש ה-card (לא הדף) — שהדייר רואה את כותרת השלב מיד
+  const card = document.querySelector('.card');
+  const target = Math.max(0, card.getBoundingClientRect().top + window.scrollY - 12);
+  window.scrollTo({ top: target, behavior: 'smooth' });
 }
 
 function validateStep(step) {
@@ -1062,7 +1123,7 @@ const fieldLabels = {
   C5_floor: 'קומה', C6_apt_num: 'מספר דירה',
   C10_id: 'תעודת זהות', C12_email: 'מייל', C13_current_address: 'כתובת מגורים עדכנית',
   C15_contact_name: 'שם איש קשר', C16_contact_phone: 'טלפון איש קשר', C17_contact_email: 'מייל איש קשר',
-  C18_senior: 'דייר קשיש', C20_age: 'גיל / תאריך לידה', C19_senior_details: 'פירוט קשיש',
+  C18_senior: 'דייר קשיש', C20_age: 'תאריך לידה', C19_senior_details: 'פירוט קשיש',
   C21_status: 'מצב הדירה', C23_tenant_names: 'שמות שוכרים', C24_tenant_phone: 'טלפון שוכרים',
   C25_eviction_notice: 'הודעת פינוי 3 חודשים', C29_rental_contract: 'חוזה שכירות',
   C35_arnona: 'חשבון ארנונה', C36_water: 'חשבון מים', C37_electricity: 'חשבון חשמל',
@@ -1109,12 +1170,24 @@ function renderSummary() {
   document.getElementById('summary').innerHTML = html;
 }
 
+let saveBadgeTimer = null;
+function showSaveBadge() {
+  const b = document.getElementById('saveBadge');
+  if (!b) return;
+  b.classList.add('show');
+  if (saveBadgeTimer) clearTimeout(saveBadgeTimer);
+  saveBadgeTimer = setTimeout(() => b.classList.remove('show'), 1500);
+}
+
 function saveDraft() {
   const form = document.getElementById('residentForm');
   const fd = new FormData(form);
   const data = {};
   for (const [k,v] of fd.entries()) { if (!(v instanceof File)) data[k] = v; }
-  try { localStorage.setItem('maoz_aviv_draft', JSON.stringify({step: currentStep, data})); } catch(e){}
+  try {
+    localStorage.setItem('maoz_aviv_draft', JSON.stringify({step: currentStep, data}));
+    showSaveBadge();
+  } catch(e){}
 }
 function loadDraft() {
   try {
