@@ -38,20 +38,37 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
 
-    if (!data.C10_id) return jsonResponse({ success: false, error: 'ת.ז. חסרה' });
-    if (!data.C3_address) return jsonResponse({ success: false, error: 'כתובת חסרה' });
-    if (!data.C6_apt_num) return jsonResponse({ success: false, error: 'מספר דירה חסר' });
+    // ללא חובות — אם חסרים שדות, נשתמש ב-fallback כדי לא לחסום את הדייר.
+    const parent = DriveApp.getFolderById(MAOZ_AVIV_FOLDER_ID);
+    const tsPretty = Utilities.formatDate(new Date(), 'Asia/Jerusalem', 'yyyy-MM-dd HHmm');
 
-    const buildingFolder = findFolderByName(
-      DriveApp.getFolderById(MAOZ_AVIV_FOLDER_ID),
-      data.C3_address.trim()
-    );
-    if (!buildingFolder) {
-      return jsonResponse({ success: false, error: 'תיקיית הכתובת לא נמצאה: ' + data.C3_address });
+    const address = (data.C3_address || '').trim();
+    let buildingFolder;
+    if (address) {
+      buildingFolder = findFolderByName(parent, address);
+      if (!buildingFolder) {
+        // כתובת שהוזנה לא תואמת אף תיקייה — fallback לתיקיית "ללא כתובת"
+        buildingFolder = getOrCreateFolder(parent, 'ללא כתובת');
+      }
+    } else {
+      buildingFolder = getOrCreateFolder(parent, 'ללא כתובת');
     }
 
-    const residentName = `${data.C7_first_name || ''} ${data.C8_last_name || ''}`.trim();
-    const residentFolderName = `דירה ${String(data.C6_apt_num).trim()} — ${residentName}`;
+    const firstName = (data.C7_first_name || '').trim();
+    const lastName = (data.C8_last_name || '').trim();
+    const residentName = `${firstName} ${lastName}`.trim();
+    const aptNum = (String(data.C6_apt_num || '')).trim();
+
+    let residentFolderName;
+    if (aptNum && residentName) {
+      residentFolderName = `דירה ${aptNum} — ${residentName}`;
+    } else if (residentName) {
+      residentFolderName = residentName;
+    } else if (aptNum) {
+      residentFolderName = `דירה ${aptNum}`;
+    } else {
+      residentFolderName = `הגשה ללא פרטים — ${tsPretty}`;
+    }
 
     const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_TAB_NAME);
     if (!sheet) return jsonResponse({ success: false, error: 'גיליון לא נמצא: ' + SHEET_TAB_NAME });
@@ -118,6 +135,10 @@ function findFolderByName(parent, name) {
   return it.hasNext() ? it.next() : null;
 }
 
+function getOrCreateFolder(parent, name) {
+  return findFolderByName(parent, name) || parent.createFolder(name);
+}
+
 function idAlreadySubmitted(sheet, id) {
   if (!id) return false;
   const lastRow = sheet.getLastRow();
@@ -134,6 +155,93 @@ function jsonResponse(obj) {
   return ContentService
     .createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * הרץ בדיקות אבחון — בודק שהכל מחובר נכון ושאין דבר חסר.
+ * תוצאות מודפסות ב-Logger (View → Logs / Cmd+Enter).
+ */
+function runTests() {
+  const expectedBuildings = [
+    'בני אפרים 219',
+    'מבצע קדש 26',
+    'מבצע קדש 28',
+    'מבצע קדש 30',
+    'מבצע קדש 32',
+  ];
+
+  const results = [];
+  const check = (name, fn) => {
+    try {
+      const info = fn();
+      results.push({ ok: true, name, info: info || '' });
+    } catch (err) {
+      results.push({ ok: false, name, info: String(err && err.message || err) });
+    }
+  };
+
+  check('פתיחת הגיליון לפי ID', () => {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    return 'שם הגיליון: ' + ss.getName();
+  });
+
+  check('קיום Tab "' + SHEET_TAB_NAME + '"', () => {
+    const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_TAB_NAME);
+    if (!sheet) throw new Error('לא נמצא tab בשם זה');
+    return 'OK';
+  });
+
+  check('כותרות בשורה הראשונה', () => {
+    const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_TAB_NAME);
+    const lastCol = sheet.getLastColumn();
+    const expected = COLUMN_ORDER.length;
+    if (lastCol < expected) {
+      throw new Error('נמצאו ' + lastCol + ' עמודות, צפויות ' + expected);
+    }
+    const first = sheet.getRange(1, 1).getValue();
+    if (!first) throw new Error('שורה ראשונה ריקה');
+    return lastCol + ' עמודות, מתחיל ב-"' + first + '"';
+  });
+
+  check('פתיחת תיקיית "פרויקט מעוז אביב" ב-Drive', () => {
+    const folder = DriveApp.getFolderById(MAOZ_AVIV_FOLDER_ID);
+    return 'שם: ' + folder.getName();
+  });
+
+  for (const name of expectedBuildings) {
+    check('תיקיית בניין: ' + name, () => {
+      const parent = DriveApp.getFolderById(MAOZ_AVIV_FOLDER_ID);
+      const f = findFolderByName(parent, name);
+      if (!f) throw new Error('לא נמצאה תת-תיקייה בשם זה');
+      return 'OK';
+    });
+  }
+
+  check('הרשאת כתיבה ל-Drive (יצירת + מחיקת תיקיית בדיקה)', () => {
+    const parent = DriveApp.getFolderById(MAOZ_AVIV_FOLDER_ID);
+    const test = parent.createFolder('__test_delete_me__');
+    test.setTrashed(true);
+    return 'OK';
+  });
+
+  check('הרשאת כתיבה לגיליון (כתיבה + מחיקה של תא בדיקה)', () => {
+    const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_TAB_NAME);
+    const lastCol = sheet.getLastColumn();
+    const testCell = sheet.getRange(1, lastCol + 1);
+    testCell.setValue('__test__');
+    testCell.clearContent();
+    return 'OK';
+  });
+
+  const ok = results.filter(r => r.ok).length;
+  const fail = results.length - ok;
+  const lines = results.map(r => (r.ok ? '✅ ' : '❌ ') + r.name + (r.info ? ' — ' + r.info : ''));
+  const summary = '\n────────────────\n' +
+    'סיכום: ' + ok + ' עברו · ' + fail + ' נכשלו';
+
+  const report = lines.join('\n') + summary;
+  Logger.log(report);
+  return report;
 }
 
 /**
