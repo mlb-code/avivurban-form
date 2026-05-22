@@ -387,6 +387,67 @@ footer strong { color: var(--gray-700); }
   80%, 100% { content: '...'; }
 }
 
+/* Terms of use box */
+.terms-box {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.terms-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  line-height: 1.6;
+  font-size: 15px;
+}
+.terms-checkbox input[type="checkbox"] {
+  width: 20px; height: 20px;
+  margin: 2px 0 0 0;
+  accent-color: var(--black);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.terms-checkbox a {
+  color: var(--black);
+  text-decoration: underline;
+  font-weight: 600;
+}
+.terms-details {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--gray-300);
+}
+.terms-details summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--gray-700);
+  font-weight: 600;
+  user-select: none;
+  padding: 4px 0;
+}
+.terms-details summary:hover { color: var(--black); }
+.terms-text {
+  margin-top: 14px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--gray-700);
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 8px 4px;
+}
+.terms-text h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--black);
+  margin-top: 14px;
+  margin-bottom: 4px;
+}
+.terms-text h4:first-child { margin-top: 0; }
+.terms-text p { margin-bottom: 8px; }
+.terms-text strong { color: var(--black); }
+
 /* Submitted state — hide everything except topbar + thank-you + footer */
 body.submitted .hero,
 body.submitted .progress,
@@ -849,9 +910,37 @@ body.submitted .card {
         <div id="summary"></div>
 
         <div class="field" style="margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--gray-200);">
-          <label>אישור סופי</label>
-          <div class="radio-group">
-            <label class="radio-option"><input type="radio" name="final_confirm" value="כן"> אני מאשר/ת שכל הפרטים שמילאתי נכונים, ומסכים/ה לעיבוד הנתונים לצורך תהליך הפינוי</label>
+          <div class="terms-box">
+            <label class="terms-checkbox">
+              <input type="checkbox" name="final_confirm" id="termsAccept" value="כן">
+              <span>קראתי ואני מאשר/ת את <a href="#" onclick="toggleTerms(event)">תנאי השימוש ומדיניות הפרטיות</a> של חברת <strong>אביב אורבן</strong>, יזם פרויקט הפינוי-בינוי "מעוז אביב". אני נותן/ת את הסכמתי החופשית לאיסוף ועיבוד המידע שמסרתי לצורכי הפרויקט.</span>
+            </label>
+
+            <details class="terms-details" id="termsDetails">
+              <summary>הצג/הסתר את תנאי השימוש המלאים</summary>
+              <div class="terms-text">
+                <h4>1. גוף האיסוף</h4>
+                <p>המידע המוזן בטופס זה נאסף ומעובד עבור חברת <strong>אביב אורבן בע"מ</strong>, יזם פרויקט הפינוי-בינוי "מעוז אביב" בתל אביב.</p>
+
+                <h4>2. מטרת איסוף המידע</h4>
+                <p>הפרטים והמסמכים שיועלו משמשים את חברת אביב אורבן לצורך ניהול תהליך הפינוי-בינוי בלבד — כולל זיהוי בעלי הזכויות בנכסים, יצירת קשר עם הדיירים, התקדמות התהליך מול הרשויות והכנת הסכמי תמורה.</p>
+
+                <h4>3. סוגי המידע הנאסף</h4>
+                <p>פרטים מזהים (שם, ת.ז., כתובת); פרטי קשר (טלפון, מייל); פרטי הנכס (כתובת הנכס, כניסה, קומה, מספר דירה, מצב נוכחי); מסמכים נלווים (צילום ת.ז., נסח טאבו, חוזה שכירות, חשבונות תקופתיים, אישור ניהול חשבון בנק); ופרטי איש קשר ושוכרים — ככל שרלוונטי.</p>
+
+                <h4>4. שמירה ואבטחה</h4>
+                <p>המידע נשמר בשרתי Google (Drive ו-Sheets) המוגנים בהצפנה בתעבורה ובאחסון. הגישה למידע מוגבלת לעובדים מורשים בלבד מטעם חברת אביב אורבן ושותפיה הישירים בפרויקט.</p>
+
+                <h4>5. שיתוף מידע עם צדדים שלישיים</h4>
+                <p>המידע לא יועבר לצד שלישי שלא לצורך התהליך, למעט: עורכי הדין של הפרויקט, חברת הניהול, רשויות מוסמכות (עירייה / רשות מקרקעי ישראל / ועדות תכנון) במידת הצורך.</p>
+
+                <h4>6. זכויותיך</h4>
+                <p>בהתאם לחוק הגנת הפרטיות, התשמ"א-1981, אתה/את זכאי/ת לעיין במידע השמור עליך, לבקש את תיקונו או מחיקתו, ולפנות בכל שאלה לחברת אביב אורבן.</p>
+
+                <h4>7. הסכמתך</h4>
+                <p>סימון הצ'ק-בוקס מהווה הסכמה חופשית ומפורשת לאיסוף, עיבוד ושימוש במידע כמתואר לעיל, ולכך שהמידע מועבר לחברת אביב אורבן כיזם הפרויקט.</p>
+              </div>
+            </details>
           </div>
         </div>
       </div>
@@ -1061,12 +1150,29 @@ function fileToBase64(file) {
   });
 }
 
+function toggleTerms(e) {
+  e.preventDefault();
+  const d = document.getElementById('termsDetails');
+  d.open = !d.open;
+  if (d.open) d.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 async function handleSubmit(e) {
   e.preventDefault();
   const btn = document.getElementById('btnSubmit');
   const errorBox = document.getElementById('submitError');
   const overlay = document.getElementById('loadingOverlay');
   errorBox.style.display = 'none';
+
+  const termsBox = document.getElementById('termsAccept');
+  if (!termsBox.checked) {
+    errorBox.textContent = 'יש לאשר את תנאי השימוש לפני שליחת הטופס';
+    errorBox.style.display = 'block';
+    termsBox.focus();
+    termsBox.closest('.terms-box').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
   btn.disabled = true;
   overlay.classList.add('show');
 
