@@ -32,6 +32,7 @@ const COLUMN_ORDER = [
   'C29_rental_contract', 'C35_arnona', 'C36_water', 'C37_electricity',
   'C38_gas', 'C39_id_copy', 'C43_bank_confirmation', 'deed_file',
   '__submission_status__',
+  '__legal_doc_version__', '__legal_ip__', '__legal_user_agent__',
 ];
 
 function doPost(e) {
@@ -110,6 +111,9 @@ function doPost(e) {
       if (col === '__submission_status__') {
         return isResubmission ? (isCompletion ? 'השלמה' : 'הגשה ראשונה') : 'הגשה ראשונה';
       }
+      if (col === '__legal_doc_version__') return data.__legal_doc_version__ || '';
+      if (col === '__legal_ip__') return data.__legal_ip__ || '';
+      if (col === '__legal_user_agent__') return data.__legal_user_agent__ || '';
       if (FILE_FIELDS[col]) return fileLinks[col] || '';
       const v = data[col];
       return (v === undefined || v === null) ? '' : v;
@@ -242,6 +246,33 @@ function runTests() {
   const report = lines.join('\n') + summary;
   Logger.log(report);
   return report;
+}
+
+/**
+ * הרצה חד-פעמית — מוסיפה 3 עמודות לוג משפטי בסוף הגיליון:
+ * גרסת מסמך משפטי, IP של המגיש, User Agent.
+ * בטוח להרצה חוזרת — לא ידרוס נתונים אם הכותרות כבר קיימות.
+ */
+function addLegalLogColumns() {
+  const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_TAB_NAME);
+  if (!sheet) throw new Error('גיליון לא נמצא: ' + SHEET_TAB_NAME);
+
+  const newHeaders = ['גרסת מסמך משפטי', 'IP של המגיש', 'User Agent'];
+  const lastCol = sheet.getLastColumn();
+  const existing = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(String);
+
+  if (newHeaders.every(h => existing.indexOf(h) !== -1)) {
+    Logger.log('הכותרות כבר קיימות — לא נדרשה פעולה.');
+    return;
+  }
+
+  const range = sheet.getRange(1, lastCol + 1, 1, newHeaders.length);
+  range.setValues([newHeaders]);
+  range.setFontWeight('bold');
+  range.setBackground('#1a1a1a');
+  range.setFontColor('#ffffff');
+  range.setHorizontalAlignment('center');
+  Logger.log('נוספו ' + newHeaders.length + ' כותרות חדשות בהצלחה.');
 }
 
 /**

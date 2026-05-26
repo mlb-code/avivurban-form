@@ -262,6 +262,8 @@ textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
 }
 .btn-primary { background: var(--black); color: var(--white); }
 .btn-primary:hover { background: var(--gray-900); transform: translateY(-1px); }
+.btn-primary:disabled { background: var(--gray-300); color: var(--gray-500); cursor: not-allowed; transform: none; }
+.btn-primary:disabled:hover { background: var(--gray-300); transform: none; }
 .btn-secondary { background: var(--white); color: var(--black); border-color: var(--gray-300); }
 .btn-secondary:hover { border-color: var(--black); }
 .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -491,10 +493,11 @@ footer strong { color: var(--gray-700); }
   font-size: 13.5px;
   line-height: 1.7;
   color: var(--gray-700);
-  max-height: 320px;
+  max-height: 420px;
   overflow-y: auto;
   padding: 8px 4px;
 }
+.terms-text a { color: var(--black); text-decoration: underline; }
 .terms-text h4 {
   font-size: 14px;
   font-weight: 700;
@@ -970,33 +973,40 @@ body.submitted .card {
         <div class="field" style="margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--gray-200);">
           <div class="terms-box">
             <label class="terms-checkbox">
-              <input type="checkbox" name="final_confirm" id="termsAccept" value="כן">
-              <span>קראתי ואני מאשר/ת את <a href="#" onclick="toggleTerms(event)">תנאי השימוש ומדיניות הפרטיות</a> של חברת <strong>אביב אורבן</strong>, יזם פרויקט הפינוי-בינוי "מעוז אביב". אני נותן/ת את הסכמתי החופשית לאיסוף ועיבוד המידע שמסרתי לצורכי הפרויקט.</span>
+              <input type="checkbox" name="final_confirm" id="termsAccept" value="כן" onchange="updateSubmitState()">
+              <span>קראתי ואני מאשר/ת את <a href="#" onclick="toggleTerms(event)">תנאי השימוש ומדיניות הפרטיות</a> המפורטים להלן של חברת <strong>אביב אורבן בע"מ</strong>. ידוע לי כי מסירת המידע והעלאת המסמכים נעשית מרצוני החופשי לצורך בדיקת זכויותיי וניהול פרויקט פינוי-הבינוי במעוז אביב, וכי המידע יעובד גם מכוח חובות דין ואינטרסים לגיטימיים של החברה.</span>
             </label>
 
             <details class="terms-details" id="termsDetails">
               <summary>הצג/הסתר את תנאי השימוש המלאים</summary>
               <div class="terms-text">
-                <h4>1. גוף האיסוף</h4>
-                <p>המידע המוזן בטופס זה נאסף ומעובד עבור חברת <strong>אביב אורבן בע"מ</strong>, יזם פרויקט הפינוי-בינוי "מעוז אביב" בתל אביב.</p>
+                <h4>פרק א': מדיניות פרטיות והגנת מידע</h4>
 
-                <h4>2. מטרת איסוף המידע</h4>
-                <p>הפרטים והמסמכים שיועלו משמשים את חברת אביב אורבן לצורך ניהול תהליך הפינוי-בינוי בלבד — כולל זיהוי בעלי הזכויות בנכסים, יצירת קשר עם הדיירים, התקדמות התהליך מול הרשויות והכנת הסכמי תמורה.</p>
+                <p><strong>1. גוף האיסוף ובסיס משפטי לעיבוד:</strong> המידע בטופס נאסף עבור חברת <strong>אביב אורבן בע"מ</strong> (ח.פ. 515095669), יזם פרויקט "מעוז אביב" בתל אביב. העיבוד מבוסס על הסכמה, ניהול מו"מ לקראת חוזה, אינטרסים לגיטימיים של החברה ועמידה בחובות דין. משיכת הסכמה לא תגרע מזכות החברה להחזיק במידע הנדרש לה מכוח החוק או להגנה משפטית.</p>
 
-                <h4>3. סוגי המידע הנאסף</h4>
-                <p>פרטים מזהים (שם, ת.ז., כתובת); פרטי קשר (טלפון, מייל); פרטי הנכס (כתובת הנכס, כניסה, קומה, מספר דירה, מצב נוכחי); מסמכים נלווים (צילום ת.ז., נסח טאבו, חוזה שכירות, חשבונות תקופתיים, אישור ניהול חשבון בנק); ופרטי איש קשר ושוכרים — ככל שרלוונטי.</p>
+                <p><strong>2. מטרת האיסוף וסוגי המידע:</strong> המידע מיועד לקידום הפרויקט, זיהוי בעלי הזכויות ובדיקת היתכנות. המידע כולל פרטים מזהים, פרטי קשר, ומסמכים רגישים (צילומי ת"ז וספח, נסחי טאבו, חוזי שכירות ואישורי חשבון בנק).</p>
 
-                <h4>4. שמירה ואבטחה</h4>
-                <p>המידע נשמר בשרתי Google (Drive ו-Sheets) המוגנים בהצפנה בתעבורה ובאחסון. הגישה למידע מוגבלת לעובדים מורשים בלבד מטעם חברת אביב אורבן ושותפיה הישירים בפרויקט.</p>
+                <p><strong>3. מידע על צדדים שלישיים:</strong> משתמש המוסר מידע על צד ג' (כמו שוכרים או שותפים) מצהיר כי הוא עושה זאת כדין וקיבל את הסכמתם המפורשת לכך.</p>
 
-                <h4>5. שיתוף מידע עם צדדים שלישיים</h4>
-                <p>המידע לא יועבר לצד שלישי שלא לצורך התהליך, למעט: עורכי הדין של הפרויקט, חברת הניהול, רשויות מוסמכות (עירייה / רשות מקרקעי ישראל / ועדות תכנון) במידת הצורך.</p>
+                <p><strong>4. העברת מידע לצדדים שלישיים ולחו"ל:</strong> המידע יועבר רק לצורכי הפרויקט ליועצי החברה (עורכי דין, אדריכלים וכד') ולרשויות מוסמכות. המידע עשוי להישמר בשירותי ענן מאובטחים הפועלים גם מחוץ לישראל, בכפוף להוראות הדין.</p>
 
-                <h4>6. זכויותיך</h4>
-                <p>בהתאם לחוק הגנת הפרטיות, התשמ"א-1981, אתה/את זכאי/ת לעיין במידע השמור עליך, לבקש את תיקונו או מחיקתו, ולפנות בכל שאלה לחברת אביב אורבן.</p>
+                <p><strong>5. אבטחת מידע:</strong> החברה מפעילה אמצעי אבטחה טכנולוגיים וארגוניים קפדניים. הגישה למידע מוגבלת לבעלי תפקידים מורשים בלבד, על בסיס הרשאות תפקיד, אמצעי אימות ונהלים פנימיים.</p>
 
-                <h4>7. הסכמתך</h4>
-                <p>סימון הצ'ק-בוקס מהווה הסכמה חופשית ומפורשת לאיסוף, עיבוד ושימוש במידע כמתואר לעיל, ולכך שהמידע מועבר לחברת אביב אורבן כיזם הפרויקט.</p>
+                <p><strong>6. תקופת שמירת המידע:</strong> המידע יישמר כל עוד הדבר נדרש לצורך ניהול הפרויקט, עמידה בדרישות הדין, ניהול הליכים משפטיים עתידיים, ציות רגולטורי ושמירת זכויות החברה (לרבות תקופת ההתיישנות).</p>
+
+                <p><strong>7. טכנולוגיות מעקב (Cookies):</strong> האתר משתמש בעוגיות ובכלי ניתוח (כגון: Google Analytics, Meta Pixel) לצורך תפעול, אבטחה ושיפור חוויית המשתמש. ניתן לחסום רכיבים אלו בהגדרות הדפדפן.</p>
+
+                <p><strong>8. מימוש זכויות ויצירת קשר:</strong> על פי החוק, הנך זכאי/ת לעיין במידע עליך ולבקש לתקנו או למחקו (בכפוף למגבלות הדין), באמצעות פנייה למייל <a href="mailto:info@avivurban.com">info@avivurban.com</a>.</p>
+
+                <h4>פרק ב': תנאי שימוש ואחריות מוגבלת</h4>
+
+                <p><strong>9. היעדר התחייבות והסתמכות:</strong> התוכן באתר מובא כמידע כללי וראשוני בלבד. אינו מהווה התחייבות סופית של החברה ואינו תחליף לייעוץ משפטי, תכנוני או פיננסי מקצועי.</p>
+
+                <p><strong>10. הגבלת אחריות וזמינות האתר:</strong> החברה אינה מתחייבת שהאתר יפעל ללא תקלות או השבתות, ולא תישא באחריות לכל נזק, ישיר או עקיף, שייגרם למשתמש עקב שימוש באתר או הסתמכות על תכניו.</p>
+
+                <p><strong>11. קניין רוחני:</strong> כל זכויות הקניין הרוחני באתר, לרבות עיצובו, קודי המקור, סימני המסחר והטקסטים שבו, שייכים במלואם לחברה (או לצד ג' שהעניק לה רישיון). אין להעתיק או להפיץ חומרים אלו ללא אישור בכתב.</p>
+
+                <p><strong>12. סמכות שיפוט:</strong> על תנאים אלו יחולו חוקי מדינת ישראל בלבד. סמכות השיפוט הבלעדית בכל סכסוך הנוגע לאתר תהיה נתונה לבתי המשפט המוסמכים במחוז תל אביב-יפו.</p>
               </div>
             </details>
           </div>
@@ -1007,7 +1017,7 @@ body.submitted .card {
       <div class="nav">
         <button type="button" class="btn btn-secondary" id="btnBack" onclick="goBack()" disabled>→ חזרה</button>
         <button type="button" class="btn btn-primary" id="btnNext" onclick="goNext()">המשך ←</button>
-        <button type="submit" class="btn btn-primary" id="btnSubmit" style="display:none;">שליחת השאלון ✓</button>
+        <button type="submit" class="btn btn-primary" id="btnSubmit" style="display:none;" disabled title="יש לאשר את תנאי השימוש לפני השליחה">שליחת השאלון ✓</button>
       </div>
 
       <div id="submitError" style="display:none; margin-top:18px; padding:14px 16px; background:#fff1f1; border:1px solid #f3c1c1; border-radius:10px; color:#8a1a1a; font-weight:600;"></div>
@@ -1205,10 +1215,26 @@ function loadDraft() {
   } catch(e){}
 }
 loadDraft();
+updateSubmitState();
 document.getElementById('residentForm').addEventListener('input', saveDraft);
 
 // כתובת ה-Web App של Apps Script
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzA-DMXXi7L7DXhjemTMxzPrjj0DY8WRcpNz8fvWYir_m5zGwgW_awESovXs7naQDmP/exec';
+
+// גרסת תנאי השימוש המוצגת בטופס — לעדכן בכל שינוי משפטי
+const TERMS_VERSION = 'v2-2026-05-26';
+
+// שליפת IP מצד שלישי (לא חוסם — אם נכשל, IP יישאר ריק)
+async function fetchUserIp() {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 3000);
+    const r = await fetch('https://api.ipify.org?format=json', { signal: ctrl.signal });
+    clearTimeout(t);
+    const j = await r.json();
+    return j.ip || '';
+  } catch (_) { return ''; }
+}
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -1228,6 +1254,15 @@ function toggleTerms(e) {
   const d = document.getElementById('termsDetails');
   d.open = !d.open;
   if (d.open) d.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// כפתור השליחה מושבת עד שמסמנים את תיבת אישור תנאי השימוש
+function updateSubmitState() {
+  const cb = document.getElementById('termsAccept');
+  const btn = document.getElementById('btnSubmit');
+  if (!cb || !btn) return;
+  btn.disabled = !cb.checked;
+  btn.title = cb.checked ? '' : 'יש לאשר את תנאי השימוש לפני השליחה';
 }
 
 async function handleSubmit(e) {
@@ -1261,6 +1296,11 @@ async function handleSubmit(e) {
         payload[k] = v;
       }
     }
+
+    // לוג משפטי — גרסת מסמך, IP, User Agent (להוכחת אישור הצ'קבוקס בזמן אמת)
+    payload.__legal_doc_version__ = TERMS_VERSION;
+    payload.__legal_ip__ = await fetchUserIp();
+    payload.__legal_user_agent__ = navigator.userAgent || '';
 
     if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('__APPS_SCRIPT_URL__') === 0) {
       throw new Error('הטופס עוד לא חובר לשרת. אנא פנה למנהל.');
