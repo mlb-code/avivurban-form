@@ -167,6 +167,7 @@ function jsonResponse(obj) {
  */
 function runTests() {
   const expectedBuildings = [
+    'בני אפרים 217',
     'בני אפרים 219',
     'מבצע קדש 26',
     'מבצע קדש 28',
